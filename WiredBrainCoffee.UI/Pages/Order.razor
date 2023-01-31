@@ -12,10 +12,9 @@
         <div class="row">
             <div class="col-md-8">
                 <div>
-                    <input class="form-control" style="max-width: 250px; display: inline-block;" placeholder="Search..." @bind="SearchTerm" />
-                    <button @onclick="FilterMenu" class="btn btn-info">Search</button>
+                    <input class="form-control" @bind="SearchTerm" @bind:after="FilterMenu" @bind:event="oninput" placeholder="Search..." />
                     <hr />
-                    @if(FilteredMenu.Count() > 0)
+                    @if (FilteredMenu.Count() > 0)
                     {
                         <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 g-4">
                             @foreach (var item in FilteredMenu)

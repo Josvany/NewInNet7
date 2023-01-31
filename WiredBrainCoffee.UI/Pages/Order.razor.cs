@@ -39,7 +39,7 @@ namespace WiredBrainCoffee.UI.Pages
             if (!string.IsNullOrWhiteSpace(SearchTerm))
             {
                 FilteredMenu = MenuItems
-                .Where(x => x.Name.ToLower().Contains(SearchTerm.ToLower())).ToList();
+                .Where(x => x.Name.Contains(SearchTerm, StringComparison.CurrentCultureIgnoreCase)).ToList();
             } 
             else
             {
@@ -104,6 +104,12 @@ namespace WiredBrainCoffee.UI.Pages
         protected async override Task OnInitializedAsync()
         {
             MenuItems = await MenuService.GetMenuItems();
+
+            PromoCode = NavManager.HistoryEntryState;
+            if(PromoCode == "WiredDiscount")
+            {
+                Discount = 0.1m;
+            }
         }
     }
 }

@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.RateLimiting;
 using WiredBrainCoffee.MinApi.Services;
 using WiredBrainCoffee.MinApi.Services.Interfaces;
 using WiredBrainCoffee.Models;
@@ -22,6 +23,31 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseCors(x => x.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
+
+app.UseRateLimiter(new RateLimiterOptions()
+{
+    RejectionStatusCode = 429
+}.AddConcurrencyLimiter("Concurrency", opt =>
+{
+    opt.PermitLimit = 1;
+}).AddFixedWindowLimiter("FixedWindow", opt =>
+{
+    opt.Window = TimeSpan.FromSeconds(2);
+    opt.PermitLimit = 10;
+    opt.QueueLimit = 3; // implementacion de colas para que la peticion no se pierda
+    opt.QueueProcessingOrder = System.Threading.RateLimiting.QueueProcessingOrder.OldestFirst;
+})
+);
+
+app.MapGet("/unlimited", () =>
+{
+    return "Un limited";
+});
+
+app.MapGet("/limited", () =>
+{
+    return "Limited";
+}).RequireRateLimiting("Concurrency");
 
 app.MapGet("/orders", (IOrderService orderService) =>
 {
